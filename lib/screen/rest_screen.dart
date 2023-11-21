@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:desk_timer/screen/widget/display_timer.dart';
 import 'package:desk_timer/widget/analog_rest_timer.dart';
 import 'package:desk_timer/widget/turnable_button.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,8 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final paintSize = size.width / 2;
+    //final paintSize = size.width / 2.3;
+    var paintSize = 250.0;
     return Container(
       color: Colors.white,
       height: size.height,
@@ -39,29 +41,52 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
         alignment: AlignmentDirectional.center,
         children: [
           Positioned.fill(
-            child: Center(
-              child: AnalogRestTimer(
-                paintSize: paintSize,
-                totalTime: kWorkingSec + kRestSec,
-                percentage: _percentage,
-                workingSec: _workingSec,
-                restSec: _restSec,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: Text('w: $_workingSec, r: $_restSec'),
-          ),
-          Positioned(
-            bottom: size.height / 100 * 15,
-            child: Row(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _startButton(),
-                _pauseButton(),
-                _resetButton(),
+                Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    AnalogRestTimer(
+                      paintSize: paintSize,
+                      totalTime: kWorkingSec + kRestSec,
+                      percentage: _percentage,
+                      workingSec: _workingSec,
+                      restSec: _restSec,
+                    ),
+                    Column(
+                      children: [
+                        _workingSec == 0
+                            ? DisplayTimer(
+                                totalSec: _restSec.toInt(),
+                                title: 'Rest',
+                                backgroundColor: Colors.grey.shade200,
+                                textColor: Colors.grey.shade800,
+                              )
+                            : DisplayTimer(
+                                totalSec: _workingSec.toInt(),
+                                title: 'Work',
+                                backgroundColor: Colors.grey.shade100,
+                                textColor: Colors.pink.shade800,
+                              ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isRunning = true;
+                                  _isWorking = true;
+                                });
+                              },
+                              icon: const Icon(Icons.play_arrow),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -99,9 +124,8 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           _restSec = kRestSec;
         });
       },
-      style: _restButtonStyle,
       enable: true,
-      child: const Text('Reset'),
+      child: const Text('Start'),
     );
   }
 
@@ -112,29 +136,20 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           _isRunning = false;
         });
       },
-      style: _restButtonStyle,
       enable: _isRunning,
       child: const Text('Pause'),
     );
   }
 
   Widget _startButton() {
-    return TurnableButton(
+    return IconButton(
       onPressed: () {
         setState(() {
           _isRunning = true;
           _isWorking = true;
         });
       },
-      style: _restButtonStyle,
-      enable: !_isRunning,
-      child: const Text('Start'),
+      icon: const Icon(Icons.play_arrow),
     );
   }
 }
-
-ButtonStyle _restButtonStyle = ElevatedButton.styleFrom(
-  elevation: 0,
-  shadowColor: Colors.white,
-  backgroundColor: Colors.black,
-);
