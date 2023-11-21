@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:desk_timer/utils/calculate.dart';
 import 'package:flutter/material.dart';
 
 class AnalogRestTimer extends StatelessWidget {
@@ -37,6 +35,9 @@ class AnalogRestTimer extends StatelessWidget {
 }
 
 // TODO: animated clock hand
+// TODO: make timer handler
+// https://github.com/navinkumar0118/NavTimer
+// https://navinkumar0118.medium.com/flutter-countdown-timer-works-in-background-f87488b0ba4c
 class AnalogRestTimerPainter extends CustomPainter {
   AnalogRestTimerPainter({
     required this.totalTime,
@@ -67,9 +68,9 @@ class AnalogRestTimerPainter extends CustomPainter {
     final centerY = size.height / 2;
     final handRadius = size.width / 2 + 8;
 
-    var paintCover = Paint()..color = Colors.white;
+    var paintCover = Paint()..color = Colors.white.withOpacity(0.3);
     var paintHand = Paint()
-      ..color = Colors.black
+      ..color = Colors.grey.shade800
       ..style = PaintingStyle.fill;
 
     // https://m.blog.naver.com/incoinco/221780288173
@@ -97,7 +98,13 @@ class AnalogRestTimerPainter extends CustomPainter {
   }
 
   void _drawClockPercentage(Canvas canvas, Size size) {
+    var center = Offset(size.width / 2, size.height / 2);
+    var outRadius = size.height / 2;
     var paint = Paint()..color = Colors.pink;
+    var paintGrey = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.grey
+      ..isAntiAlias = true;
     double sweepAngle = percentageToAngle(percentage);
 
     var p = Path()
@@ -113,23 +120,30 @@ class AnalogRestTimerPainter extends CustomPainter {
       )
       ..close();
 
+    // draw outline on circle
+    canvas.drawCircle(
+      center,
+      outRadius,
+      paintGrey,
+    );
+    // draw percentage
     canvas.drawPath(p, paint);
   }
 
   void _drawClockOutline(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..color = Colors.black
+    var innerRadius = size.height / 2.3;
+    var center = Offset(size.width / 2, size.height / 2);
+
+    var innerEmptyPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.white
       ..isAntiAlias = true;
 
+    // fill inner space on circle
     canvas.drawCircle(
-      Offset(
-        size.width / 2,
-        size.height / 2,
-      ),
-      size.height / 2,
-      paint,
+      center,
+      innerRadius,
+      innerEmptyPaint,
     );
   }
 
