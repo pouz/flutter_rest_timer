@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+
+class AnalogRestTImer extends StatelessWidget {
+  const AnalogRestTImer({
+    super.key,
+    required this.paintSize,
+    required this.totalTime,
+    required this.percentage,
+    required this.workingSec,
+    required this.restSec,
+  });
+
+  final double totalTime;
+  final double paintSize;
+  final double percentage;
+  final double workingSec;
+  final double restSec;
+
+  @override
+  Widget build(BuildContext context) {
+    return RotatedBox(
+      quarterTurns: -1,
+      child: CustomPaint(
+        size: Size(paintSize, paintSize),
+        painter: ClockPainter(
+          totalTime: kWorkingSec + kRestSec,
+          percentage: percentage,
+          workingTime: workingSec,
+          restTime: restSec,
+        ),
+      ),
+    );
+  }
+}

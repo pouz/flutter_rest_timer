@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:desk_timer/painter/clock_painter.dart';
+import 'package:desk_timer/widget/analog_rest_timer.dart';
 import 'package:desk_timer/widget/turnable_button.dart';
 import 'package:flutter/material.dart';
 
@@ -11,15 +11,15 @@ class RestScreen extends StatefulWidget {
   State<RestScreen> createState() => _RestScreenState();
 }
 
-const kWorkingSec = 20;
-const kRestSec = 10;
+const double kWorkingSec = 20;
+const double kRestSec = 10;
 
 class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   bool _isRunning = false;
   bool _isWorking = false;
-  int _workingSec = kWorkingSec; // 40 min
-  int _restSec = kRestSec; // 10 min
-  final double _percentage = kWorkingSec / kWorkingSec + kRestSec * 100;
+  double _workingSec = kWorkingSec;
+  double _restSec = kRestSec;
+  final double _percentage = (kWorkingSec / (kWorkingSec + kRestSec)) * 360;
 
   @override
   void initState() {
@@ -40,14 +40,12 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
         children: [
           Positioned.fill(
             child: Center(
-              child: CustomPaint(
-                size: Size(paintSize, paintSize),
-                painter: ClockPainter(
-                  totalTime: kWorkingSec + kRestSec,
-                  percentage: _percentage,
-                  workingTime: _workingSec,
-                  restTime: _restSec,
-                ),
+              child: AnalogRestTimer(
+                paintSize: paintSize,
+                totalTime: kWorkingSec + kRestSec,
+                percentage: _percentage,
+                workingSec: _workingSec,
+                restSec: _restSec,
               ),
             ),
           ),
