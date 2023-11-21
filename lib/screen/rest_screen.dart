@@ -11,8 +11,8 @@ class RestScreen extends StatefulWidget {
   State<RestScreen> createState() => _RestScreenState();
 }
 
-const double kWorkingSec = 20;
-const double kRestSec = 10;
+const double kWorkingSec = 45 * 60;
+const double kRestSec = 15 * 60;
 
 class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   bool _isRunning = false;
@@ -60,8 +60,8 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _startButton(),
-                const SizedBox(width: 300),
-                _stopButton(),
+                _pauseButton(),
+                _resetButton(),
               ],
             ),
           ),
@@ -89,7 +89,23 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
     });
   }
 
-  Widget _stopButton() {
+  Widget _resetButton() {
+    return TurnableButton(
+      onPressed: () {
+        setState(() {
+          _isRunning = false;
+          _isWorking = false;
+          _workingSec = kWorkingSec;
+          _restSec = kRestSec;
+        });
+      },
+      style: _restButtonStyle,
+      enable: true,
+      child: const Text('Reset'),
+    );
+  }
+
+  Widget _pauseButton() {
     return TurnableButton(
       onPressed: () {
         setState(() {
@@ -98,7 +114,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
       },
       style: _restButtonStyle,
       enable: _isRunning,
-      child: const Text('Stop'),
+      child: const Text('Pause'),
     );
   }
 
