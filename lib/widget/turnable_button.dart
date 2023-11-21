@@ -7,6 +7,7 @@ class TurnableButton extends StatelessWidget {
     this.style,
     this.disableBackgroundColor = Colors.grey,
     this.enable = true,
+    this.padding = const EdgeInsets.all(8),
     this.child,
   });
 
@@ -15,19 +16,23 @@ class TurnableButton extends StatelessWidget {
   final Color? disableBackgroundColor;
   final bool enable;
   final Widget? child;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: enable
-          ? style
-          : ElevatedButton.styleFrom().copyWith(
-              backgroundColor:
-                  MaterialStateProperty.all(disableBackgroundColor),
-              elevation: MaterialStateProperty.all(0),
-            ),
-      child: child,
+    return Padding(
+      padding: padding!,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: enable
+            ? style
+            : ElevatedButton.styleFrom().copyWith(
+                backgroundColor:
+                    MaterialStateProperty.all(disableBackgroundColor),
+                elevation: MaterialStateProperty.all(0),
+              ),
+        child: child,
+      ),
     );
   }
 }
