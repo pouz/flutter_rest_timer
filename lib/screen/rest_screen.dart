@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:desk_timer/screen/widget/analog_rest_timer.dart';
 import 'package:desk_timer/screen/widget/display_timer.dart';
+import 'package:desk_timer/screen/widget/modals/time_set_modal.dart';
 import 'package:flutter/material.dart';
 
 class RestScreen extends StatefulWidget {
@@ -12,20 +13,28 @@ class RestScreen extends StatefulWidget {
   State<RestScreen> createState() => _RestScreenState();
 }
 
-const double kWorkingSec = 45 * 60;
-const double kRestSec = 15 * 60;
+double work = 45 * 60;
+double rest = 15 * 60;
 
 class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   bool _isRunning = false;
   bool _isWorking = true;
-  double _workingSec = kWorkingSec;
-  double _restSec = kRestSec;
-  final _percentage = (kWorkingSec / (kWorkingSec + kRestSec)) * 360;
+  double _workingSec = work;
+  double _restSec = rest;
+  // for texteditor
+  late TextEditingController _workTextEditorController;
+  late TextEditingController _restTextEditorController;
+
+  // for alarm
   late final AudioPlayer _player;
 
   @override
   void initState() {
+    _workTextEditorController = TextEditingController(text: '45');
+    _restTextEditorController = TextEditingController(text: '15');
+    // for alarm
     _player = AudioPlayer();
+    // event on a sce
     Timer.periodic(const Duration(seconds: 1), _countSeconds);
     super.initState();
   }
@@ -57,7 +66,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                     children: [
                       AnalogRestTimer(
                         paintSize: paintSize,
-                        totalTime: kWorkingSec + kRestSec,
+                        totalTime: work + rest,
                         percentage: _percentage,
                         workingSec: _workingSec,
                         restSec: _restSec,
@@ -118,9 +127,38 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           onPressed: () {
             setState(() {
               _isRunning = false;
-              _workingSec = kWorkingSec;
-              _restSec = kRestSec;
+              _workingSec = work;
+              _restSec = rest;
             });
+          },
+        ),
+        const SizedBox(width: 15),
+        _button(
+          backgroundColor: Colors.grey.shade800,
+          iconColor: Colors.white,
+          icon: Icons.settings,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return TimeSetModal(
+                  workController: _workTextEditorController,
+                  restController: _restTextEditorController,
+                  onChangedWorkTime: (value) {
+                    setState(() {
+                      work = double.parse(value) * 60;
+                      _workingSec = work;
+                    });
+                  },
+                  onChangedRestTime: (value) {
+                    setState(() {
+                      rest = double.parse(value) * 60;
+                      _restSec = rest;
+                    });
+                  },
+                );
+              },
+            );
           },
         ),
       ],
@@ -167,18 +205,20 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   void _countSeconds(Timer t) {
     setState(() {
       if (!_isRunning) return;
-      if (_workingSec <= 0) {
+      if (_workingSec <= 0 && _isWorking == true) {
         _isWorking = false;
         _player.play(AssetSource('working_end.mp3'));
       }
 
-      if (_restSec <= 0) {
+      if (_restSec <= 0 && _isWorking == false) {
         _isWorking = true;
         _player.play(AssetSource('rest_end.mp3'));
-        _workingSec = kWorkingSec;
-        _restSec = kRestSec;
+        _workingSec = work;
+        _restSec = rest;
       }
       _isWorking ? _workingSec-- : _restSec--;
     });
   }
+
+  double get _percentage => (work / (work + rest)) * 360;
 }
