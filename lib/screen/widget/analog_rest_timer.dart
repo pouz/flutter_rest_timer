@@ -19,15 +19,29 @@ class AnalogRestTimer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RotatedBox(
-      quarterTurns: -1,
-      child: CustomPaint(
-        size: Size(paintSize, paintSize),
-        painter: AnalogRestTimerPainter(
-          totalTime: totalTime,
-          percentage: percentage,
-          workingTime: workingSec,
-          restTime: restSec,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(paintSize),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(3, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: RotatedBox(
+        quarterTurns: -1,
+        child: CustomPaint(
+          size: Size(paintSize, paintSize),
+          painter: AnalogRestTimerPainter(
+            totalTime: totalTime,
+            percentage: percentage,
+            workingTime: workingSec,
+            restTime: restSec,
+          ),
         ),
       ),
     );

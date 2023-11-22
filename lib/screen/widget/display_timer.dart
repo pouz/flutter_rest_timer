@@ -18,13 +18,44 @@ class DisplayTimer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(title),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: 5,
+            horizontal: 10,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 2,
+                offset: const Offset(1, 1), // changes position of shadow
+              ),
+            ],
+          ),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ),
+        ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ..._decoratedString(_remainHours(totalSec)),
-            const Text(' : '),
+            const Text(
+              ' : ',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             ..._decoratedString(_remainSec(totalSec)),
           ],
         )
@@ -55,6 +86,14 @@ class DisplayTimer extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
         color: backgroundColor,
         borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(1, 1), // changes position of shadow
+          ),
+        ],
       ),
       child: Center(
         child: Text(

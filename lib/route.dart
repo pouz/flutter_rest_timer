@@ -1,4 +1,4 @@
-import 'package:desk_timer/screen/main_screen.dart';
+import 'package:desk_timer/screen/rest_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,7 +25,7 @@ class AppRoute {
             path: root,
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
-              child: const MainScreen(),
+              child: const RestScreen(),
             ),
           ),
         ],
