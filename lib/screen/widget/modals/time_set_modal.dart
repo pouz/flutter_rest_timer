@@ -67,6 +67,7 @@ class TimeSetModal extends StatelessWidget {
             ),
             TextField(
               controller: controller,
+              textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
