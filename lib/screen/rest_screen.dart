@@ -209,7 +209,8 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
     setState(() {
       if (_workingSec <= 0 && _isWorking == true) {
         _isWorking = false;
-        _player.play(AssetSource('working_end.mp3'));
+        //_player.play(AssetSource('working_end.mp3'));
+        _player.play(AssetSource('rest_end.mp3'));
       }
 
       if (_restSec <= 0 && _isWorking == false) {
