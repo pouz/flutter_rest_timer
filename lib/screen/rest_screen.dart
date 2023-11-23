@@ -62,33 +62,11 @@ class _RestScreenState extends ConsumerState<RestScreen>
                   Stack(
                     alignment: AlignmentDirectional.center,
                     children: [
+                      // draw analog timer circle
                       AnalogRestTimer(
                         paintSize: paintSize,
-                        totalTime: rtn.work + rtn.rest,
-                        percentage: rtn.percentage,
-                        workingSec: rt.work,
-                        restSec: rt.rest,
                       ),
-                      Column(
-                        children: [
-                          const SizedBox(height: 18),
-                          rtn.isWorking
-                              ? DisplayTimer(
-                                  totalSec: rt.work.toInt(),
-                                  title: 'Work',
-                                  backgroundColor: Colors.grey.shade100,
-                                  textColor: Colors.pink.shade800,
-                                )
-                              : DisplayTimer(
-                                  totalSec: rt.rest.toInt(),
-                                  title: 'Rest',
-                                  backgroundColor: Colors.grey.shade200,
-                                  textColor: Colors.grey.shade800,
-                                ),
-                          const SizedBox(height: 10),
-                          _buttons(rt, rtn),
-                        ],
-                      ),
+                      _displayTimer(rtn, rt),
                     ],
                   ),
                 ],
@@ -97,6 +75,29 @@ class _RestScreenState extends ConsumerState<RestScreen>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _displayTimer(RestTimer rtn, WorkRest rt) {
+    return Column(
+      children: [
+        const SizedBox(height: 18),
+        rtn.isWorking
+            ? DisplayTimer(
+                totalSec: rt.work,
+                title: 'Work',
+                backgroundColor: Colors.grey.shade100,
+                textColor: Colors.pink.shade800,
+              )
+            : DisplayTimer(
+                totalSec: rt.rest,
+                title: 'Rest',
+                backgroundColor: Colors.grey.shade200,
+                textColor: Colors.grey.shade800,
+              ),
+        const SizedBox(height: 10),
+        _buttons(rt, rtn),
+      ],
     );
   }
 

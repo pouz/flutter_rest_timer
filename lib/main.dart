@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'PJ Timer',
       debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: true,
+      showPerformanceOverlay: false,
       theme: mainTheme,
       routerConfig: AppRoute.router,
     );

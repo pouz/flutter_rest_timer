@@ -1,24 +1,21 @@
 import 'dart:math';
+import 'package:desk_timer/feature/rest_timer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AnalogRestTimer extends StatelessWidget {
+class AnalogRestTimer extends ConsumerWidget {
   const AnalogRestTimer({
     super.key,
     required this.paintSize,
-    required this.totalTime,
-    required this.percentage,
-    required this.workingSec,
-    required this.restSec,
   });
 
-  final int totalTime;
   final double paintSize;
-  final double percentage;
-  final int workingSec;
-  final int restSec;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final rt = ref.watch(restTimerProvider);
+    final rtn = ref.read(restTimerProvider.notifier);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.green,
@@ -37,10 +34,10 @@ class AnalogRestTimer extends StatelessWidget {
         child: CustomPaint(
           size: Size(paintSize, paintSize),
           painter: AnalogRestTimerPainter(
-            totalTime: totalTime,
-            percentage: percentage,
-            workingTime: workingSec,
-            restTime: restSec,
+            totalTime: rtn.work + rtn.rest,
+            percentage: rtn.percentage,
+            workingTime: rt.work,
+            restTime: rt.rest,
           ),
         ),
       ),
