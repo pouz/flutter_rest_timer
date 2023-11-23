@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:desk_timer/feature/rest_timer.dart';
 import 'package:desk_timer/screen/widget/analog_rest_timer.dart';
 import 'package:desk_timer/screen/widget/display_timer.dart';
 import 'package:desk_timer/screen/widget/modals/time_set_modal.dart';
@@ -13,37 +13,30 @@ class RestScreen extends StatefulWidget {
   State<RestScreen> createState() => _RestScreenState();
 }
 
-int work = 45 * 60;
-int rest = 15 * 60;
-
 class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
-  bool _isRunning = false;
-  bool _isWorking = true;
-  int _workingSec = work;
-  int _restSec = rest;
   // for texteditor
   late TextEditingController _workTextEditorController;
   late TextEditingController _restTextEditorController;
-
-  // for alarm
-  late final AudioPlayer _player;
+  final _rt = RestTimer();
 
   @override
   void initState() {
     _workTextEditorController =
-        TextEditingController(text: (work ~/ 60).toString());
+        TextEditingController(text: (_rt.work ~/ 60).toString());
     _restTextEditorController =
-        TextEditingController(text: (rest ~/ 60).toString());
+        TextEditingController(text: (_rt.rest ~/ 60).toString());
     // for alarm
-    _player = AudioPlayer();
     // event on a sce
-    Timer.periodic(const Duration(seconds: 1), _countSeconds);
+    _rt.addListener(() {
+      setState(() {});
+    });
+    Timer.periodic(const Duration(seconds: 1), _rt.countSeconds);
     super.initState();
   }
 
   @override
   void dispose() {
-    _player.dispose();
+    _rt.dispose();
     super.dispose();
   }
 
@@ -68,23 +61,23 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                     children: [
                       AnalogRestTimer(
                         paintSize: paintSize,
-                        totalTime: work + rest,
-                        percentage: _percentage,
-                        workingSec: _workingSec,
-                        restSec: _restSec,
+                        totalTime: _rt.work + _rt.rest,
+                        percentage: _rt.percentage,
+                        workingSec: _rt.workingSec,
+                        restSec: _rt.restSec,
                       ),
                       Column(
                         children: [
                           const SizedBox(height: 18),
-                          _isWorking
+                          _rt.isWorking
                               ? DisplayTimer(
-                                  totalSec: _workingSec.toInt(),
+                                  totalSec: _rt.workingSec.toInt(),
                                   title: 'Work',
                                   backgroundColor: Colors.grey.shade100,
                                   textColor: Colors.pink.shade800,
                                 )
                               : DisplayTimer(
-                                  totalSec: _restSec.toInt(),
+                                  totalSec: _rt.restSec.toInt(),
                                   title: 'Rest',
                                   backgroundColor: Colors.grey.shade200,
                                   textColor: Colors.grey.shade800,
@@ -114,11 +107,9 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           clickedIconColor: Colors.white,
           icon: Icons.play_arrow,
           clickedIcon: Icons.pause,
-          isClicked: _isRunning,
+          isClicked: _rt.isRunning,
           onPressed: () {
-            setState(() {
-              _isRunning = !_isRunning;
-            });
+            _rt.startAndPause();
           },
         ),
         const SizedBox(width: 15),
@@ -127,11 +118,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           iconColor: Colors.white,
           icon: Icons.replay,
           onPressed: () {
-            setState(() {
-              _isRunning = false;
-              _workingSec = work;
-              _restSec = rest;
-            });
+            _rt.reset();
           },
         ),
         const SizedBox(width: 15),
@@ -147,16 +134,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                   workController: _workTextEditorController,
                   restController: _restTextEditorController,
                   onTapOK: (workMin, restMin) {
-                    setState(() {
-                      if (workMin == '' || restMin == '') {
-                        workMin = '0';
-                        restMin = '0';
-                      }
-                      work = int.parse(workMin) * 60;
-                      rest = int.parse(restMin) * 60;
-                      _workingSec = work;
-                      _restSec = rest;
-                    });
+                    _rt.setting(workMin, restMin);
                   },
                 );
               },
@@ -203,25 +181,4 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-  void _countSeconds(Timer t) {
-    if (!_isRunning) return;
-    setState(() {
-      if (_workingSec <= 0 && _isWorking == true) {
-        _isWorking = false;
-        //_player.play(AssetSource('working_end.mp3'));
-        _player.play(AssetSource('rest_end.mp3'));
-      }
-
-      if (_restSec <= 0 && _isWorking == false) {
-        _isWorking = true;
-        _player.play(AssetSource('rest_end.mp3'));
-        _workingSec = work;
-        _restSec = rest;
-      }
-      _isWorking ? _workingSec-- : _restSec--;
-    });
-  }
-
-  double get _percentage => (work / (work + rest)) * 360;
 }
