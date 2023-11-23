@@ -5,44 +5,47 @@ import 'package:desk_timer/screen/widget/analog_rest_timer.dart';
 import 'package:desk_timer/screen/widget/display_timer.dart';
 import 'package:desk_timer/screen/widget/modals/time_set_modal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestScreen extends StatefulWidget {
+class RestScreen extends ConsumerStatefulWidget {
   const RestScreen({super.key});
 
   @override
-  State<RestScreen> createState() => _RestScreenState();
+  ConsumerState<RestScreen> createState() => _RestScreenState();
 }
 
-class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
+class _RestScreenState extends ConsumerState<RestScreen>
+    with TickerProviderStateMixin {
   // for texteditor
   late TextEditingController _workTextEditorController;
   late TextEditingController _restTextEditorController;
-  final _rt = RestTimer();
 
   @override
   void initState() {
+    final rt = ref.read(restTimerProvider);
     _workTextEditorController =
-        TextEditingController(text: (_rt.work ~/ 60).toString());
+        TextEditingController(text: (rt.work ~/ 60).toString());
     _restTextEditorController =
-        TextEditingController(text: (_rt.rest ~/ 60).toString());
-    // for alarm
+        TextEditingController(text: (rt.rest ~/ 60).toString());
     // event on a sce
-    _rt.addListener(() {
-      setState(() {});
-    });
-    Timer.periodic(const Duration(seconds: 1), _rt.countSeconds);
+    Timer.periodic(
+      const Duration(seconds: 1),
+      ref.read(restTimerProvider.notifier).countSeconds,
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    _rt.dispose();
+    ref.read(restTimerProvider.notifier).dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final rt = ref.watch(restTimerProvider);
+    final rtn = ref.read(restTimerProvider.notifier);
     var paintSize = 250.0;
     return Scaffold(
       body: Container(
@@ -61,29 +64,29 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                     children: [
                       AnalogRestTimer(
                         paintSize: paintSize,
-                        totalTime: _rt.work + _rt.rest,
-                        percentage: _rt.percentage,
-                        workingSec: _rt.workingSec,
-                        restSec: _rt.restSec,
+                        totalTime: rtn.work + rtn.rest,
+                        percentage: rtn.percentage,
+                        workingSec: rt.work,
+                        restSec: rt.rest,
                       ),
                       Column(
                         children: [
                           const SizedBox(height: 18),
-                          _rt.isWorking
+                          rtn.isWorking
                               ? DisplayTimer(
-                                  totalSec: _rt.workingSec.toInt(),
+                                  totalSec: rt.work.toInt(),
                                   title: 'Work',
                                   backgroundColor: Colors.grey.shade100,
                                   textColor: Colors.pink.shade800,
                                 )
                               : DisplayTimer(
-                                  totalSec: _rt.restSec.toInt(),
+                                  totalSec: rt.rest.toInt(),
                                   title: 'Rest',
                                   backgroundColor: Colors.grey.shade200,
                                   textColor: Colors.grey.shade800,
                                 ),
                           const SizedBox(height: 10),
-                          _buttons(),
+                          _buttons(rt, rtn),
                         ],
                       ),
                     ],
@@ -97,7 +100,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
     );
   }
 
-  Row _buttons() {
+  Row _buttons(WorkRest rt, RestTimer rtn) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -107,9 +110,9 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           clickedIconColor: Colors.white,
           icon: Icons.play_arrow,
           clickedIcon: Icons.pause,
-          isClicked: _rt.isRunning,
+          isClicked: rtn.isRunning,
           onPressed: () {
-            _rt.startAndPause();
+            rtn.startAndPause();
           },
         ),
         const SizedBox(width: 15),
@@ -118,7 +121,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
           iconColor: Colors.white,
           icon: Icons.replay,
           onPressed: () {
-            _rt.reset();
+            rtn.reset();
           },
         ),
         const SizedBox(width: 15),
@@ -134,7 +137,7 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                   workController: _workTextEditorController,
                   restController: _restTextEditorController,
                   onTapOK: (workMin, restMin) {
-                    _rt.setting(workMin, restMin);
+                    rtn.setting(workMin, restMin);
                   },
                 );
               },

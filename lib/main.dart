@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_size/window_size.dart';
 
 import 'route.dart';
@@ -20,7 +21,7 @@ void main() {
     }
   }
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'PJ Timer',
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: true,
       theme: mainTheme,
       routerConfig: AppRoute.router,
     );
