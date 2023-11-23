@@ -11,11 +11,11 @@ class AnalogRestTimer extends StatelessWidget {
     required this.restSec,
   });
 
-  final double totalTime;
+  final int totalTime;
   final double paintSize;
   final double percentage;
-  final double workingSec;
-  final double restSec;
+  final int workingSec;
+  final int restSec;
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +60,9 @@ class AnalogRestTimerPainter extends CustomPainter {
     required this.percentage,
   });
 
-  final double totalTime;
-  final double workingTime;
-  final double restTime;
+  final int totalTime;
+  final int workingTime;
+  final int restTime;
   final double percentage;
 
   @override
@@ -165,12 +165,12 @@ class AnalogRestTimerPainter extends CustomPainter {
     return (percentage) * pi / 180;
   }
 
-  double amountToAngle(double total, double amount) {
+  double amountToAngle(int total, int amount) {
     if (amount == 0) return percentageToAngle(0);
     return percentageToAngle(amount / total * 360);
   }
 
-  double get _getProgressTime => (totalTime - workingTime - restTime);
+  int get _getProgressTime => (totalTime - workingTime - restTime);
   double get _startAngle => percentageToAngle(0);
   double get _sweepAngle => amountToAngle(totalTime, _getProgressTime);
 }

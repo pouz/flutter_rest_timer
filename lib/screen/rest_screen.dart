@@ -13,14 +13,14 @@ class RestScreen extends StatefulWidget {
   State<RestScreen> createState() => _RestScreenState();
 }
 
-double work = 45 * 60;
-double rest = 15 * 60;
+int work = 45 * 60;
+int rest = 15 * 60;
 
 class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   bool _isRunning = false;
   bool _isWorking = true;
-  double _workingSec = work;
-  double _restSec = rest;
+  int _workingSec = work;
+  int _restSec = rest;
   // for texteditor
   late TextEditingController _workTextEditorController;
   late TextEditingController _restTextEditorController;
@@ -146,13 +146,13 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                   restController: _restTextEditorController,
                   onChangedWorkTime: (value) {
                     setState(() {
-                      work = double.parse(value) * 60;
+                      work = int.parse(value) * 60;
                       _workingSec = work;
                     });
                   },
                   onChangedRestTime: (value) {
                     setState(() {
-                      rest = double.parse(value) * 60;
+                      rest = int.parse(value) * 60;
                       _restSec = rest;
                     });
                   },
