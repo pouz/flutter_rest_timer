@@ -30,8 +30,10 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _workTextEditorController = TextEditingController(text: '45');
-    _restTextEditorController = TextEditingController(text: '15');
+    _workTextEditorController =
+        TextEditingController(text: (work ~/ 60).toString());
+    _restTextEditorController =
+        TextEditingController(text: (rest ~/ 60).toString());
     // for alarm
     _player = AudioPlayer();
     // event on a sce
@@ -144,15 +146,15 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
                 return TimeSetModal(
                   workController: _workTextEditorController,
                   restController: _restTextEditorController,
-                  onChangedWorkTime: (value) {
+                  onTapOK: (workMin, restMin) {
                     setState(() {
-                      work = int.parse(value) * 60;
+                      if (workMin == '' || restMin == '') {
+                        workMin = '0';
+                        restMin = '0';
+                      }
+                      work = int.parse(workMin) * 60;
+                      rest = int.parse(restMin) * 60;
                       _workingSec = work;
-                    });
-                  },
-                  onChangedRestTime: (value) {
-                    setState(() {
-                      rest = int.parse(value) * 60;
                       _restSec = rest;
                     });
                   },
@@ -203,8 +205,8 @@ class _RestScreenState extends State<RestScreen> with TickerProviderStateMixin {
   }
 
   void _countSeconds(Timer t) {
+    if (!_isRunning) return;
     setState(() {
-      if (!_isRunning) return;
       if (_workingSec <= 0 && _isWorking == true) {
         _isWorking = false;
         _player.play(AssetSource('working_end.mp3'));
