@@ -59,21 +59,23 @@ class RestTimer extends Notifier<WorkRest> {
     if (state.rest <= 0 && _isWorking == false) {
       _isWorking = true;
       _player.play(AssetSource('rest_end.mp3'));
-      state = WorkRest(work: _totalWork, rest: _totalRest);
+      update(work: _totalWork, rest: _totalRest);
     }
-    _isWorking
-        ? state = state.copywith(work: --state.work)
-        : state = state.copywith(rest: --state.rest);
+    _isWorking ? update(work: --state.work) : update(rest: --state.rest);
   }
 
   void reset() {
     _isRunning = false;
-    state = WorkRest(work: _totalWork, rest: _totalRest);
+    update(work: _totalWork, rest: _totalRest);
   }
 
   void startAndPause() {
     _isRunning = !_isRunning;
-    state = state.copywith();
+    update();
+  }
+
+  void update({int? work, int? rest}) {
+    state = state.copywith(work: work, rest: rest);
   }
 
   void setting(String workMin, String restMin) {
